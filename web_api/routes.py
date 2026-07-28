@@ -326,7 +326,7 @@ def copy_positions():
 @app.route("/master-copy-positions")
 def master_copy_positions():
     positions = get_master_copy_positions()
-    print("MASTER ROUTE")
+    print("MASTER ROUTE - b8b70aa")
 
     # Use sessions instead of relying on socket_listener
     master_session = sessions.get("master")  # replace "master" with your actual master client_id

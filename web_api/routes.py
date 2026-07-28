@@ -227,6 +227,8 @@ def login_clients_route():
     )
 
     sessions = login_clients(enabled_clients.data)
+    print("SESSIONS KEYS:", sessions.keys())
+    print("SESSIONS:", sessions)
 
     from services.socket_listener import socket_client
 

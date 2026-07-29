@@ -39,7 +39,10 @@ def start_copy_trading():
 
     # Login master client
     master_client = get_master_client()
+    print("MASTER CLIENT:", master_client)
+
     master_session = login_xts(master_client)
+    print("MASTER SESSION:", master_session)
 
     # Download latest master contract
     master_df = load_master(master_session["Market_Xt"])

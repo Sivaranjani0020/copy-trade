@@ -172,32 +172,29 @@ class OrderSocket_io(socketio.Client):
     def on_order(self, data):
 
         try:
-
             print("\n==============================")
             print("RAW ORDER EVENT")
             print(data)
             print("==============================")
-
+    
             order = json.loads(data)
-
-            print("STATUS :", order.get("OrderStatus"))
+    
             print("APP ORDER ID :", order.get("AppOrderID"))
-
-            # Update master orders
+            print("STATUS       :", order.get("OrderStatus"))
+            print("ORDER TYPE   :", order.get("OrderType"))
+            print("AVG PRICE    :", order.get("OrderAverageTradedPriceAPI"))
+            print("QTY FILLED   :", order.get("OrderQuantity"))
+            print("==============================")
+    
             update_master_order(order)
-
-            from services.master_copy_position_manager import get_positions
-
-            print("MASTER COPY POSITIONS")
-            print(get_positions())
-
-            if order.get("OrderStatus") == "Filled":
-                # Update master position book
+    
+            status = order.get("OrderStatus")
+    
+            if status == "Filled":
+                print(">>> FILLED EVENT RECEIVED <<<")
                 process_master_fill(order)
-
-                # Copy to followers
                 copy_order(order, self)
-
+    
         except Exception as e:
             print("Socket Order Error:", e)
 

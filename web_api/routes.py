@@ -329,11 +329,20 @@ def master_copy_positions():
     print("MASTER ROUTE - b8b70aa")
 
     # Use sessions instead of relying on socket_listener
-    master_session = sessions.get("master")  # replace "master" with your actual master client_id
-    if not master_session or "Market_Xt" not in master_session:
-        return jsonify({"status": "failed", "message": "Master Market_Xt not initialized"})
-
-    market_xt = master_session["Market_Xt"]
+    # Use the master Market_Xt already connected to the master socket
+    if not socket_listener.socket_client:
+        return jsonify({
+            "status": "failed",
+            "message": "Master socket not initialized"
+        })
+    
+    market_xt = socket_listener.socket_client.market_client
+    
+    if not market_xt:
+        return jsonify({
+            "status": "failed",
+            "message": "Master Market_Xt not initialized"
+        })
 
     for position in positions:
         if position["status"] != "Open":

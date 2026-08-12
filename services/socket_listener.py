@@ -218,7 +218,10 @@ class OrderSocket_io(socketio.Client):
 
     def on_disconnect(self):
         """On receiving disconnection from socket"""
-        print('Interactive Socket disconnected!')
+        print("================================")
+        print("INTERACTIVE SOCKET DISCONNECTED")
+        print("Socket connected state:", self.sid.connected)
+        print("================================")
 
     def get_emitter(self):
         """For getting event listener"""

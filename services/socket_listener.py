@@ -149,8 +149,8 @@ class OrderSocket_io(socketio.Client):
         self.sid.wait()
         """Disconnect from the socket."""
         # self.sid.disconnect()
-
-   def on_connect(self):
+                    
+        def on_connect(self):
         """Connect from the socket"""
         print("================================")
         print("INTERACTIVE SOCKET CONNECTED")

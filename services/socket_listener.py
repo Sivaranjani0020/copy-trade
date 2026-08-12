@@ -150,9 +150,13 @@ class OrderSocket_io(socketio.Client):
         """Disconnect from the socket."""
         # self.sid.disconnect()
 
-    def on_connect(self):
+   def on_connect(self):
         """Connect from the socket"""
-        print('Interactive socket connected successfully!')
+        print("================================")
+        print("INTERACTIVE SOCKET CONNECTED")
+        print("SID:", self.sid.sid)
+        print("ENGINEIO SID:", self.sid.eio.sid)
+        print("================================")
 
     def on_message(self):
         """On message from socket"""
@@ -160,7 +164,12 @@ class OrderSocket_io(socketio.Client):
 
     def on_joined(self, data):
         """On socket joined"""
-        print('Interactive socket joined successfully!' + data)
+        print("================================")
+        print("INTERACTIVE SOCKET JOINED")
+        print("JOIN RESPONSE:", data)
+        print("SID:", self.sid.sid)
+        print("ENGINEIO SID:", self.sid.eio.sid)
+        print("================================")
 
     def on_error(self, data):
         """On receiving error from socket"""

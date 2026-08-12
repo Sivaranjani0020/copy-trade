@@ -98,6 +98,7 @@ class OrderSocket_io(socketio.Client):
 
         self.master_df = master_df
         self.follower_sessions = follower_sessions
+        self.joined_received = False
         """Get root url from config file"""
         # currDirMain = os.getcwd()
         configParser = configparser.RawConfigParser()
@@ -164,6 +165,13 @@ class OrderSocket_io(socketio.Client):
 
     def on_joined(self, data):
         """On socket joined"""
+    
+        if self.joined_received:
+            print("Duplicate JOINED event ignored")
+            return
+    
+        self.joined_received = True
+    
         print("================================")
         print("INTERACTIVE SOCKET JOINED")
         print("JOIN RESPONSE:", data)

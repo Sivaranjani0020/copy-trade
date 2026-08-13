@@ -98,7 +98,7 @@ class OrderSocket_io:
 
         self.master_df = master_df
         self.follower_sessions = follower_sessions
-        self.joined_received = False
+        # self.joined_received = False
         """Get root url from config file"""
         # currDirMain = os.getcwd()
         configParser = configparser.RawConfigParser()
@@ -117,39 +117,62 @@ class OrderSocket_io:
 
         self.connection_url = port + self.token + '&userID=' + self.userID + "&apiType=INTERACTIVE"
 
-    def connect(self, headers={}, transports=['websocket'], namespaces=None, socketio_path='/interactive/socket.io',
-                verify=False):
-        ...
-        url = self.connection_url
-        self.sid.connect(url, headers=headers, transports=transports, namespaces=namespaces,
-                         socketio_path=socketio_path)
-
-        """Connect to a Socket.IO server.
-        :param url: The URL of the Socket.IO server. It can include custom
-                    query string parameters if required by the server.
-        :param headers: A dictionary with custom headers to send with the
-                        connection request.
-        :param transports: The list of allowed transports. Valid transports
-                           are 'polling' and 'websocket'. If not
-                           given, the polling transport is connected first,
-                           then an upgrade to websocket is attempted.
-        :param namespaces: The list of custom namespaces to connect, in
-                           addition to the default namespace. If not given,
-                           the namespace list is obtained from the registered
-                           event handlers.
-        :param socketio_path: The endpoint where the Socket.IO server is
-                              installed. The default value is appropriate for
-                              most cases.
-
-        """
+    def connect(
+    self,
+    headers=None,
+    transports=None,
+    namespaces=None,
+    socketio_path='/interactive/socket.io'
+):
         """Connect to the socket."""
-        # url = self.connection_url
-
-        """Connected to the socket."""
-        # self.sid.connect(url, headers, transports, namespaces, socketio_path)
+    
+        url = self.connection_url
+    
+        print("Connecting to Interactive Socket...")
+    
+        if headers is None:
+            headers = {}
+    
+        if transports is None:
+            transports = ["websocket"]
+    
+        import socket
+    
+        host = "secure.aetramtrades.in"
+        port = 443
+    
+        try:
+            ip = socket.gethostbyname(host)
+            print(f"DNS OK: {host} -> {ip}")
+    
+            s = socket.create_connection(
+                (host, port),
+                timeout=10
+            )
+    
+            print("TCP connection successful")
+    
+            s.close()
+    
+        except Exception as e:
+            print("TCP test failed:", repr(e))
+    
+        try:
+            self.sid.connect(
+                url=url,
+                headers=headers,
+                transports=transports,
+                namespaces=namespaces,
+                socketio_path=socketio_path
+            )
+    
+            print("Connected successfully")
+    
+        except Exception as e:
+            print("Connection failed:", repr(e))
+            raise
+    
         self.sid.wait()
-        """Disconnect from the socket."""
-        # self.sid.disconnect()
                     
     def on_connect(self):
         """Connect from the socket"""
@@ -165,19 +188,7 @@ class OrderSocket_io:
 
     def on_joined(self, data):
         """On socket joined"""
-    
-        if self.joined_received:
-            print("Duplicate JOINED event ignored")
-            return
-    
-        self.joined_received = True
-    
-        print("================================")
-        print("INTERACTIVE SOCKET JOINED")
-        print("JOIN RESPONSE:", data)
-        print("SID:", self.sid.sid)
-        print("ENGINEIO SID:", self.sid.eio.sid)
-        print("================================")
+        print("Interactive socket joined successfully!" + data)
 
     def on_error(self, data):
         """On receiving error from socket"""

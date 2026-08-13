@@ -26,7 +26,7 @@ from services.master_position_manager import update_master_order
 from services.master_copy_position_manager import process_master_fill
 socket_client = None
 
-class OrderSocket_io(socketio.Client):
+class OrderSocket_io:
     """A Socket.IO client.
     This class implements a fully compliant Socket.IO web client with support
     for websocket and long-polling transports.
@@ -90,7 +90,7 @@ class OrderSocket_io(socketio.Client):
         self.sid.on('tradeConversion', self.on_tradeconversion)
         self.sid.on('logout', self.on_messagelogout)
         self.sid.on('disconnect', self.on_disconnect)
-
+        self.sid.on('socketError', self.on_socket_error)
         self.userID = userID
         self.token = token
         self.api_client = api_client
@@ -183,6 +183,11 @@ class OrderSocket_io(socketio.Client):
         """On receiving error from socket"""
         print('Interactive socket error!' + data)
 
+    def on_socket_error(self, data):
+        print("\n==============================")
+        print("AETRAM SOCKET ERROR")
+        print(data)
+        print("==============================")
     # def on_order(self, data):
     #     """On receiving order placed data from socket"""
     #     # print("Order placed!" + data)

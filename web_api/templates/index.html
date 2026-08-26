@@ -70,6 +70,9 @@
         /* ==============================
    DARK THEME FOR CLIENT LIST
    ============================== */
+/* ==============================
+   DARK THEME FOR CLIENT LIST
+   ============================== */
 body {
     background: #121212;
     color: #e0e0e0;
@@ -88,23 +91,31 @@ body {
 }
 
 .table {
-    background: #1e1e1e;
-    color: #e0e0e0;
+    background: #1e1e1e !important;
+    color: #f8fafc !important;
 }
 
 .table thead th {
     background: #0f172a !important;
-    color: #f8fafc;
+    color: #f8fafc !important;
     border: none;
 }
 
 .table tbody td {
-    color: #e0e0e0;
-    border-color: #2d2d2d;
+    color: #f8fafc !important;
+    border-color: #2d2d2d !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #1a1a1a !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: #222222 !important;
 }
 
 .table-hover tbody tr:hover {
-    background: #2d2d2d;
+    background: #2d2d2d !important;
 }
 
 .btn-success {
@@ -116,19 +127,7 @@ body {
     background: #14532d;
     border-color: #14532d;
 }
-/* Ensure table text is visible in dark theme */
-.table tbody td {
-    color: #f8fafc !important;   /* light text */
-}
 
-.table thead th {
-    background: #0f172a !important;
-    color: #f8fafc !important;   /* header text */
-}
-
-.table-hover tbody tr:hover {
-    background: #2d2d2d !important;
-}
 
     </style>
 

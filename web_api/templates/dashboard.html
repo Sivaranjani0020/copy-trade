@@ -560,6 +560,7 @@
 /* ==============================
    DARK THEME OVERRIDE
    ============================== */
+
 body {
     background: #121212;
     color: #e0e0e0;
@@ -569,34 +570,83 @@ body {
     background: #0f172a !important;
 }
 
+/* CARDS */
 .card {
-    background: #1e1e1e;
+    background: #1e1e1e !important;
     color: #e0e0e0;
     border: 1px solid #2d2d2d;
 }
 
+/* TABLE HEADER */
 .table thead th {
     background: #0f172a !important;
-    color: #f8fafc;
+    color: #f8fafc !important;
+    border-color: #2d2d2d !important;
 }
 
+/* TABLE BODY */
 .table tbody td {
-    color: #e0e0e0;
-    border-color: #2d2d2d;
+    background: #1e1e1e !important;
+    color: #f1f5f9 !important;
+    border-color: #3a3a3a !important;
 }
 
-.table-hover tbody tr:hover {
-    background: #2d2d2d;
+/* STRIPED TABLE - DARK */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #1e1e1e !important;
+    color: #f1f5f9 !important;
 }
 
+.table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: #252525 !important;
+    color: #f1f5f9 !important;
+}
+
+/* HOVER */
+.table-hover tbody tr:hover > * {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+/* BUTTONS */
 .btn-light {
-    background: #2d2d2d;
-    color: #f8fafc;
+    background: #2d2d2d !important;
+    color: #f8fafc !important;
+    border-color: #444 !important;
 }
 
 .btn-outline-light {
-    border-color: #f8fafc;
-    color: #f8fafc;
+    border-color: #f8fafc !important;
+    color: #f8fafc !important;
+}
+
+/* PANIC BUTTON */
+.btn-danger {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+}
+
+/* CHECKBOX */
+input[type="checkbox"] {
+    accent-color: #2563eb;
+}
+
+/* LINKS / NAVIGATION */
+.navbar .nav-link {
+    color: #cbd5e1 !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    background: #2d3a52 !important;
+    color: white !important;
+}
+
+/* STATUS */
+td:last-child {
+    font-weight: 600;
+    color: #f8fafc !important;
 }
 
 </style>

@@ -15,7 +15,7 @@ Responsibilities:
 This module only handles the web interface and delegates
 all trading operations to the service layer.
 """
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 
 from services.client_manager import login_clients
 from services.logger import log_program_event
@@ -40,7 +40,7 @@ supabase_client = supabase.create_client(
 
 
 app = Flask(__name__)
-
+app.secret_key = "copy-trading-admin-secret-key"
 
 # -------------------------------
 # Global sessions
@@ -60,14 +60,76 @@ sessions = {}
 # from services.position_manager import position_manager
 
 
+# -------------------------------
+# Admin Authentication
+# -------------------------------
 
+
+@app.route("/admin-login", methods=["GET", "POST"])
+def admin_login():
+
+    if request.method == "POST":
+
+        userid = request.form.get("userid")
+        password = request.form.get("password")
+
+        print("ENTERED USERID:", repr(userid))
+        print("ENTERED PASSWORD:", repr(password))
+
+        result = (
+            supabase_client
+            .table("admin_details")
+            .select("userid, password")
+            .eq("userid", userid)
+            .execute()
+        )
+
+        print("SUPABASE RESULT:", result.data)
+
+        if result.data:
+            admin = result.data[0]
+
+            print("DB USERID:", repr(admin["userid"]))
+            print("DB PASSWORD:", repr(admin["password"]))
+
+            if str(admin["password"]) == str(password):
+
+                session["admin_logged_in"] = True
+                session["admin_userid"] = userid
+
+                return redirect(url_for("index"))
+
+        return render_template(
+            "admin_login.html",
+            error="Invalid userid or password"
+        )
+
+    return render_template("admin_login.html")
+
+
+@app.route("/logout")
+def logout():
+
+    userid = session.get("admin_userid")
+
+    session.clear()
+
+    log_program_event(
+        "Admin logged out",
+        details={
+            "userid": userid
+        }
+    )
+
+    return redirect(url_for("admin_login"))
 # -------------------------------
 # 1. Client Selection Page
 # -------------------------------
 
 @app.route("/")
 def index():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     clients = (
         supabase_client
         .table("xt_login_credentials")
@@ -128,7 +190,8 @@ def index():
 
 @app.route("/toggle_client", methods=["POST"])
 def toggle_client():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     client_id = request.form["client_id"]
 
     enabled = (
@@ -170,7 +233,8 @@ def toggle_client():
 
 @app.route("/update_lots", methods=["POST"])
 def update_lots():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     client_id = request.form["client_id"]
 
     lots = int(
@@ -215,7 +279,8 @@ def update_lots():
 
 @app.route("/login", methods=["POST"])
 def login_clients_route():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     global sessions
 
     enabled_clients = (
@@ -251,7 +316,8 @@ def login_clients_route():
 
 @app.route("/dashboard")
 def dashboard():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     master_positions = get_master_positions()
     positions = get_positions()
 
@@ -283,7 +349,8 @@ def dashboard():
 #     })
 @app.route("/positions-data")
 def positions_data():
-
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     master = get_master_positions()
     follower = get_positions()
 
@@ -298,17 +365,19 @@ def positions_data():
 
 @app.route("/copy-positions")
 def copy_positions():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     positions = get_copy_positions()
 
     for pos in positions:
         if pos["status"] != "Open":
             continue
 
-        session = sessions.get(pos["client_id"])
-        if not session or "Market_Xt" not in session:
+        client_session = sessions.get(pos["client_id"])
+        if not client_session or "Market_Xt" not in client_session:
             continue
 
-        market_xt = session["Market_Xt"]
+        market_xt = client_session["Market_Xt"]
         ltp = fetch_ltp(market_xt, 2, pos["instrument_id"])
         if ltp is None:
             continue
@@ -325,6 +394,8 @@ def copy_positions():
 
 @app.route("/master-copy-positions")
 def master_copy_positions():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     positions = get_master_copy_positions()
     print("MASTER ROUTE - b8b70aa")
 
@@ -366,6 +437,8 @@ def master_copy_positions():
 
 @app.route("/cancel/<client_id>/<instrument_id>", methods=["POST"])
 def cancel_position(client_id, instrument_id):
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
     positions = get_positions()
     position = next(
         (p for p in positions if p["client_id"] == client_id and str(p["instrument_id"]) == str(instrument_id)),
